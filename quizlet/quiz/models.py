@@ -18,7 +18,16 @@ class Question(models.Model):
     created_at = models.DateTimeField(_("Created"), auto_now_add=True)
     updated_at = models.DateTimeField(_("Updated"), auto_now=True)
 
+    def __str__(self):
+        return self.title
+
 class Answer(models.Model):
 
     question = models.ForeignKey(to=Question, related_name='answer', verbose_name=_("Question"), on_delete=models.CASCADE)
-    
+    answer = models.TextField(_("Answer"))
+    is_correct =models.BooleanField(_("Correct Answer"), default=False)
+    created_at = models.DateTimeField(_("Created"), auto_now_add=True)
+    updated_at = models.DateTimeField(_("Updated"), auto_now=True)
+
+    def __str__(self):
+        return self.answer
