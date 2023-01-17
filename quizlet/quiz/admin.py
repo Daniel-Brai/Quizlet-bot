@@ -6,6 +6,16 @@ class AnswerInline(admin.TabularInline): # new
     fields = ["answer", "is_correct"]
 
 class QuestionAdmin(admin.ModelAdmin):
+    fields = [
+        "title",
+        "points",
+        "difficulty"
+    ]
+    list_display = [
+        "title",
+        "created_at",
+        "updated_at"
+    ]
     inlines = [
         AnswerInline,
     ]
