@@ -1,7 +1,10 @@
 import os
-from dotenv import load_dotenv
+import requests
+import json
+import asyncio
 import discord
 
+from dotenv import load_dotenv
 load_dotenv()
 
 intents = discord.Intents.default()
@@ -9,6 +12,29 @@ intents.message_content = True
 
 client = discord.Client(intents=intents)
 token = os.getenv('TOKEN')
+
+def get_random_question():
+    question = ""
+    idx = 1
+    answer = 0
+
+    question_api_uri = os.getenv('QUESTION_API_URI')
+    response = requests.get(question_api_uri)
+    data = json.loads(response.text)
+
+    question += f"Question: \n{data[0]['title']} \n"
+
+    for item in data[0]['answer']:
+        question += str(idx) + "." + " " + item['answer'] + "\n"
+
+        if item['is_correct']:
+            answer = idx
+
+        idx += 1
+
+    return (question, answer)
+
+         
 
 @client.event
 async def on_ready():
@@ -19,7 +45,27 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.startswith('$hello'):
-        await message.channel.send('Hello! You are welcome to DannyBrai Server. ')
+    if message.content.startswith('H'):
+        await message.channel.send(
+            'Hello! You are welcome to DannyBrai Server. \nI am a bot that serves you random questions. \nYou have a limit of 5 seconds to answer.'
+        )
+
+    if message.content.startswith('$question'):
+        q, a = get_random_question()
+        await message.channel.send(q)
+
+        def check_user_answer(answer):
+            return answer.author == message.author and answer.content.isdigit()
+        
+        try:
+            guess = await client.wait_for('message', check=check_user_answer, timeout=5.0)
+
+            if int(guess.content) == a:
+                return await message.channel.send('😁 Hooray! You guessed correctly.')
+            else:
+                return await message.channel.send('😔 Oops! Your answer was wrong.')
+
+        except asyncio.TimeoutError:
+            return await message.channel.send('Oops! You took too long to respond.')
 
 client.run(token)
