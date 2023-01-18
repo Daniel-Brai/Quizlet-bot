@@ -11,7 +11,7 @@ class Question(models.Model):
         (4, _("Expert"))
     )
 
-    title = models.TextField()
+    title = models.CharField(_("Title"), max_length=300)
     points = models.PositiveSmallIntegerField(_("Points"))
     difficulty = models.IntegerField(_("Difficulty"), choices=LEVELS, default=0)
     is_active = models.BooleanField(_("Is Active"), default=True)
@@ -24,7 +24,7 @@ class Question(models.Model):
 class Answer(models.Model):
 
     question = models.ForeignKey(to=Question, related_name='answer', verbose_name=_("Question"), on_delete=models.CASCADE)
-    answer = models.TextField(_("Answer"))
+    answer = models.CharField(_("Answer"), max_length=300)
     is_correct =models.BooleanField(_("Correct Answer"), default=False)
     created_at = models.DateTimeField(_("Created"), auto_now_add=True)
     updated_at = models.DateTimeField(_("Updated"), auto_now=True)
