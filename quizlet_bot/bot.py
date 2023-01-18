@@ -22,7 +22,8 @@ def get_random_question():
     response = requests.get(question_api_uri)
     data = json.loads(response.text)
 
-    question += f"Question: \n{data[0]['title']} \n"
+    points = int(data[0]['points'])
+    question += f"Question: \n{data[0]['title']} ({points} points) \n"
 
     for item in data[0]['answer']:
         question += str(idx) + "." + " " + item['answer'] + "\n"
@@ -32,7 +33,7 @@ def get_random_question():
 
         idx += 1
 
-    return (question, answer)
+    return (question, answer, points)
 
          
 
@@ -51,7 +52,8 @@ async def on_message(message):
         )
 
     if message.content.startswith('$question'):
-        q, a = get_random_question()
+        total_pts = 0
+        q, a, p = get_random_question()
         await message.channel.send(q)
 
         def check_user_answer(answer):
@@ -61,7 +63,8 @@ async def on_message(message):
             guess = await client.wait_for('message', check=check_user_answer, timeout=5.0)
 
             if int(guess.content) == a:
-                return await message.channel.send('😁 Hooray! You guessed correctly.')
+                total_pts += p
+                return await message.channel.send(f"😁 Hooray! You guessed correctly. Your total points is: {total_pts} ")
             else:
                 return await message.channel.send('😔 Oops! Your answer was wrong.')
 
