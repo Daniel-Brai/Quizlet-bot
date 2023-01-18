@@ -7,7 +7,6 @@ class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
         fields = [
-            "id",
             "answer",
             "is_correct",
         ]
