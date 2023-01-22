@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Internal Apps
     'quizlet.quiz',
+    'quizlet.score',
     # External Apps
     'rest_framework',
 ]
